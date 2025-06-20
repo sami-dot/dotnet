@@ -1,24 +1,28 @@
-@"
-param (
-  [string]$version = "1.0.0"
-)
+# Step 1: Navigate to your deployment directory
+cd C:\deployment
 
-Write-Host "📦 Starting deployment for version $version"
-
-$repoUrl = "http://10.1.96.4:8098/repository/static-repo/SimpleIISApp-$version.zip"
-$outputPath = "C:\deployment\SimpleIISApp.zip"
-$extractPath = "C:\inetpub\wwwroot\SimpleIISApp"
-
-# Download the ZIP from Nexus (no authentication)
-Invoke-WebRequest -Uri $repoUrl -OutFile $outputPath
-
-# Remove old site files
-if (Test-Path $extractPath) {
-    Remove-Item $extractPath -Recurse -Force
+# Step 2: Delete the old script if it exists
+if (Test-Path .\deploy-dotnet.ps1) {
+    Remove-Item .\deploy-dotnet.ps1 -Force
 }
 
-# Extract the new ZIP contents to IIS path
-Expand-Archive -Path $outputPath -DestinationPath $extractPath
+# Step 3: Recreate the deploy-dotnet.ps1 file with corrected content
+@"
+param (
+    [string]`$version = "1.0.0"
+)
 
-Write-Host "✅ Deployment complete for version $version"
-"@ | Set-Content -Path "C:\deployment\deploy-dotnet.ps1" -Encoding UTF8
+`$repoUrl = "http://10.1.96.4:8098/repository/static-repo/SimpleIISApp-$version.zip"
+`$outputPath = "C:\deployments\SimpleIISApp.zip"
+
+# If Nexus auth causes problems, skip credentials
+Invoke-WebRequest -Uri `$repoUrl -OutFile `$outputPath
+
+# Unzip and deploy to IIS path
+`$destinationPath = "C:\inetpub\wwwroot\SimpleIISApp"
+
+if (Test-Path `$destinationPath) {
+    Remove-Item `$destinationPath -Recurse -Force
+}
+Expand-Archive -Path `$outputPath -DestinationPath `$destinationPath
+"@ | Out-File -Encoding UTF8 .\deploy-dotnet.ps1
