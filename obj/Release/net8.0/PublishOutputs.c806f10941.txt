@@ -1,0 +1,7 @@
+/home/sami/SimpleIISApp/publish/SimpleIISApp
+/home/sami/SimpleIISApp/publish/appsettings.Development.json
+/home/sami/SimpleIISApp/publish/appsettings.json
+/home/sami/SimpleIISApp/publish/SimpleIISApp.dll
+/home/sami/SimpleIISApp/publish/SimpleIISApp.deps.json
+/home/sami/SimpleIISApp/publish/SimpleIISApp.runtimeconfig.json
+/home/sami/SimpleIISApp/publish/SimpleIISApp.pdb
