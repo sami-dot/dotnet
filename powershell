@@ -1,12 +1,3 @@
-# Step 1: Navigate to your deployment directory
-cd C:\deployment
-
-# Step 2: Delete the old script if it exists
-if (Test-Path .\deploy-dotnet.ps1) {
-    Remove-Item .\deploy-dotnet.ps1 -Force
-}
-
-# Step 3: Recreate the deploy-dotnet.ps1 file with corrected content
 @"
 param (
     [string]`$version = "1.0.0"
@@ -25,4 +16,4 @@ if (Test-Path `$destinationPath) {
     Remove-Item `$destinationPath -Recurse -Force
 }
 Expand-Archive -Path `$outputPath -DestinationPath `$destinationPath
-"@ | Out-File -Encoding UTF8 .\deploy-dotnet.ps1
+"@ | Out-File -Encoding UTF8 "C:\deployment\deploy-dotnet.ps1"
