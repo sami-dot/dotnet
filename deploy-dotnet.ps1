@@ -9,17 +9,10 @@ $zipFile = "$appName-$version.zip"
 $destinationZip = "C:\deployments\$zipFile"
 $extractPath = "C:\inetpub\wwwroot\$appName"
 $backupPath = "C:\backups\$appName-$((Get-Date).ToString("yyyyMMdd-HHmmss"))"
-$username = "admin"
-$password = "admin123"
-
-# === AUTH HEADER FOR NEXUS ===
-$pair = "$username:$password"
-$encodedCreds = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($pair))
-$headers = @{ Authorization = "Basic $encodedCreds" }
 
 # === STEP 1: DOWNLOAD FROM NEXUS ===
 Write-Host "📥 Downloading $zipFile from Nexus..."
-Invoke-WebRequest -Uri "$repoUrl/$zipFile" -OutFile $destinationZip -Headers $headers
+Invoke-WebRequest -Uri "$repoUrl/$zipFile" -OutFile $destinationZip
 
 # === STEP 2: BACKUP EXISTING SITE (OPTIONAL) ===
 if (Test-Path $extractPath) {
