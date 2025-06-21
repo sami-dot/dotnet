@@ -2,30 +2,28 @@ param (
   [string]$version
 )
 
-# Paths and repo info
+# Variables
 $repoUrl = "http://10.1.96.4:8098/repository/static-repo/SimpleApp-$version.tar.gz"
 $outputPath = "C:\\deployments\\SimpleApp.tar.gz"
 $destinationPath = "C:\\inetpub\\wwwroot\\SimpleIISApp"
 
-# Download .tar.gz file from Nexus
+# Download the .tar.gz file from Nexus
 Invoke-WebRequest -Uri $repoUrl -OutFile $outputPath
 
-# Stop IIS site to release file locks
+# Import IIS module
 Import-Module WebAdministration
+
+# Stop IIS site (to prevent file lock issues)
 Stop-Website -Name "SimpleIISApp"
 
-# OPTIONAL: Also stop app pool (if files still locked)
-# Stop-WebAppPool -Name "SimpleIISAppPool"
-
-# Clear old deployment (delete and recreate folder)
+# Delete entire old site directory and recreate it
 Remove-Item -Recurse -Force $destinationPath -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $destinationPath | Out-Null
 
-# Extract the .tar.gz file
+# Extract new contents into the destination folder
 tar -xzf $outputPath -C $destinationPath
 
-# Restart IIS site
+# Start the site again
 Start-Website -Name "SimpleIISApp"
 
-# OPTIONAL: Also start app pool (if used above)
-# Start-WebAppPool -Name "SimpleIISAppPool"
+Write-Host "✅ Deployment of version $version completed successfully."

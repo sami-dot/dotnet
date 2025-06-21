@@ -1,14 +1,22 @@
 pipeline {
-  agent any
+  agent {
+    label 'kr-jenkins-slave01'
+  }
 
   environment {
     VERSION = "1.0.${BUILD_NUMBER}"
     FILE_NAME = "SimpleApp-${VERSION}.tar.gz"
     NEXUS_URL = "http://10.1.96.4:8098"
-    NEXUS_REPO = "static-repo"
+    NEXUS_REPO = "dotnet-repo"
   }
 
   stages {
+    stage('Clean Previous Build') {
+      steps {
+        sh 'rm -rf publish'
+      }
+    }
+
     stage('Publish .NET App') {
       steps {
         sh '''
