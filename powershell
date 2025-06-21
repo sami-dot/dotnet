@@ -1,19 +1,23 @@
-@"
 param (
-    [string]`$version = "1.0.0"
+  [string]$version
 )
 
-`$repoUrl = "http://10.1.96.4:8098/repository/static-repo/SimpleIISApp-$version.zip"
-`$outputPath = "C:\deployments\SimpleIISApp.zip"
+$repoUrl = "http://10.1.96.4:8098/repository/static-repo/SimpleApp-$version.tar.gz"
+$outputPath = "C:\\deployments\\SimpleApp.tar.gz"
+$destinationPath = "C:\\inetpub\\wwwroot\\SimpleIISApp"
 
-# If Nexus auth causes problems, skip credentials
-Invoke-WebRequest -Uri `$repoUrl -OutFile `$outputPath
+# Download .tar.gz file
+Invoke-WebRequest -Uri $repoUrl -OutFile $outputPath
 
-# Unzip and deploy to IIS path
-`$destinationPath = "C:\inetpub\wwwroot\SimpleIISApp"
+# Stop site to avoid conflicts (optional)
+Import-Module WebAdministration
+Stop-Website -Name "SimpleIISApp"
 
-if (Test-Path `$destinationPath) {
-    Remove-Item `$destinationPath -Recurse -Force
-}
-Expand-Archive -Path `$outputPath -DestinationPath `$destinationPath
-"@ | Out-File -Encoding UTF8 "C:\deployment\deploy-dotnet.ps1"
+# Clear old files
+Remove-Item -Recurse -Force "$destinationPath\\*" -ErrorAction SilentlyContinue
+
+# Extract
+tar -xzf $outputPath -C $destinationPath
+
+# Start the site
+Start-Website -Name "SimpleIISApp"
